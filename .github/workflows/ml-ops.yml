@@ -1,0 +1,102 @@
+name: CML
+on: [push]
+
+
+jobs:
+  main_job:
+    name: main job
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
+      - name: set up python env
+        uses: actions/setup-python@v2
+
+      - name: install npm
+        uses: actions/setup-node@v1
+        with:
+          node-version: '16'
+
+      - name: install vega
+        run: |
+          npm install -g vega-cli vega-lite
+
+      - name: set up cml
+        uses: iterative/setup-cml@v1
+
+      - name: Action summary
+        run: |
+          echo "## Action summary" >> report.md
+          echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event." >> report.md
+          echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!" >> report.md
+          echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}." >> report.md
+          echo "💡 The ${{ github.repository }} repository has been cloned to the runner." >> report.md
+          echo "🖥️ The workflow is now ready to test your code on the runner." >> report.md
+
+      - name: instal dependencies
+        run: |
+          pip install poetry
+          poetry config virtualenvs.create false
+          poetry install
+
+      - name: Run flake8
+        uses: julianwachholz/flake8-action@v2
+        with:
+          checkName: "Python Lint"
+          path: ./
+          config: ./tox.ini
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run Black
+        run: black .
+
+      - name: If needed, commit black changes to the pull request.
+        if: ${{ failure() }}
+        run: |
+          black .
+          git config --global user.name 'autoblack'
+          git config --global user.email 'cclauss@users.noreply.github.com'
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/$GITHUB_REPOSITORY
+          git checkout $GITHUB_HEAD_REF
+          git commit -am "fixup: Format Python code with Black"
+          git push
+
+      - name: Run Pylint
+        run: |
+          python tests/lint.py --threshold 3
+
+      - name: setup dvc
+        run: |
+          dvc remote modify origin --local auth basic
+          dvc remote modify origin --local user gracikk-ds
+          dvc remote modify origin --local password 87bdb3d5761e99805e6b4eac8a3c7b7096fcddeb
+
+      - name: Run unit tests and dvc repro
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          dvc pull
+          # pytest
+          dvc repro
+          git fetch --prune
+
+      - name: show plots and metrics
+        env:
+          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "## Model metrics diff" >> report.md
+          dvc metrics diff main --show-md >> report.md
+
+          echo "## ROC-AUC Curve" >> report.md
+          dvc plots diff --target reports/metrics/plots.json \
+            -x fpr \
+            -y tpr \
+            --show-vega main > vega.json
+          vl2png vega.json -s 1.5 > plot.png
+          cml publish --md plot.png >> report.md
+
+          echo "## Feature Importance SHAP values" >> report.md
+          cml publish --md reports/features_importance/shap_values.png >> report.md
+          cml send-comment report.md

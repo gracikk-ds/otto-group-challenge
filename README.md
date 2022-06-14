@@ -57,3 +57,13 @@ poetry install
 ```
 
 --------
+
+Dags Hub DVC integration
+---
+```bash
+dvc remote add origin https://dagshub.com/gracikk-ds/otto-group-challenge.dvc
+dvc remote modify origin --local auth basic
+dvc remote modify origin --local user "your_user_name"
+dvc remote modify origin --local password "your_token"
+```
+ 
