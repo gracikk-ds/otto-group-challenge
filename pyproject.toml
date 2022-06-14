@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "otto_group_challenge"
+version = "0.1.0"
+description = "MLOps Practice Project"
+authors = ["mlops-team"]
+
+[tool.poetry.dependencies]
+python = "^3.8,<3.11"
+tqdm = "^4.64.0"
+click = "^8.1.2"
+seaborn = "0.11.2"
+scikit-learn = "1.1.1"
+llvmlite = "^0.38.1"
+dvc = {extras = ["s3"], version = "^2.10.2"}
+great-expectations = "^0.15.7"
+optuna = "^2.10.0"
+shap = "^0.40.0"
+mlflow = "^1.26.1"
+python-dotenv = "^0.20.0"
+
+[tool.poetry.dev-dependencies]
+pre-commit = "^2.19.0"
+flake8 = "4.0.1"
+black = "22.3.0"
+pre-commit-hooks = "4.2.0"
+pylint = "^2.13.9"
+pytest = "^7.1.2"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
