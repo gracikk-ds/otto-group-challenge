@@ -77,26 +77,4 @@ jobs:
         env:
           REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-#           dvc pull
           pytest
-#           dvc repro
-#           git fetch --prune
-
-#      - name: show plots and metrics
-#        env:
-#          REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        run: |
-#          echo "## Model metrics diff" >> report.md
-#          dvc metrics diff main --show-md >> report.md
-#
-#          echo "## ROC-AUC Curve" >> report.md
-#          dvc plots diff --target reports/metrics/plots.json \
-#            -x fpr \
-#            -y tpr \
-#            --show-vega main > vega.json
-#          vl2png vega.json -s 1.5 > plot.png
-#          cml publish --md plot.png >> report.md
-#
-#          echo "## Feature Importance SHAP values" >> report.md
-#          cml publish --md reports/features_importance/shap_values.png >> report.md
-#          cml send-comment report.md
