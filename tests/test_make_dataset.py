@@ -1,4 +1,4 @@
-from src.data.make_dataset import make_dataset
+# from src.data.make_dataset import make_dataset
 from click.testing import CliRunner
 
 # Initialize runner

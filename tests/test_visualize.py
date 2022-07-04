@@ -1,4 +1,4 @@
-from src.visualization.visualize import main
+# from src.visualization.visualize import main
 from click.testing import CliRunner
 
 # Initialize runner

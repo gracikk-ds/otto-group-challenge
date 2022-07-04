@@ -1,0 +1,27 @@
+stages:
+
+#  prepare_data:
+#    cmd:
+#    deps:
+#      -
+#    outs:
+#      -
+
+#  train_the_model:
+#    cmd:
+#    params:
+#      -
+#    deps:
+#      -
+#    outs:
+#      -
+
+  evaluation:
+    cmd: python src/models/validate_model.py --path_to_dataset data/processed/test.csv --path_to_metrics_storage reports/metrics
+    deps:
+      - data/processed/test.csv
+      - src/models/validate_model.py
+    metrics:
+      - reports/metrics/metrics.json
+    plots:
+      - reports/metrics/plots.json

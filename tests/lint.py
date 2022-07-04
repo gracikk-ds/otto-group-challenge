@@ -1,4 +1,3 @@
-import os
 import click
 import logging
 from pylint.lint import Run

@@ -65,7 +65,7 @@ jobs:
 
       - name: Run Pylint
         run: |
-          python tests/lint.py --threshold 3
+          python tests/lint.py --threshold 5
 
       - name: setup dvc
         run: |

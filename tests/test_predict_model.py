@@ -1,4 +1,4 @@
-from src.models.predict_model import main
+# from src.models.predict_model import main
 from click.testing import CliRunner
 
 # Initialize runner
